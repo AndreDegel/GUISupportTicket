@@ -33,7 +33,7 @@ public class TicketGUI extends JFrame{
 
     DefaultListModel<Ticket> ticketListModel;
     ArrayList<Ticket> resolvedTickets = new ArrayList<Ticket>(); //new arraylist to store resolved tickets and later put to txt file
-
+    ArrayList<Ticket> openTickets = new ArrayList<Ticket>(); //new arraylist to store open tickets and later put to txt file
     public TicketGUI() {
         super("List of Support Tickets");
         setContentPane(rootPanel);
@@ -68,18 +68,20 @@ public class TicketGUI extends JFrame{
                 int priorityAsInt = Integer.parseInt(priority);
                 Ticket newTicket = new Ticket(issue, priorityAsInt, reporter, dateReported);
                 TicketGUI.this.ticketListModel.addElement(newTicket);
+                openTickets.add(newTicket);
+                System.out.println(openTickets.toString());
             }
         });
         deleteTicketButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Date dateResolved = new Date(); //Default constructor creates date with current date/time
+                //TODO: not working yet
                 Ticket toDelete = TicketGUI.this.ticketList.getSelectedValue();
                 txtResolved.setText("");
                 txtResolved.setEditable(true);
                 try {
                     toDelete.setResolution(txtResolved.getText());
-                    toDelete.setResolvedDate(dateResolved);
+
                     resolvedTickets.add(toDelete);
 
                 }
@@ -139,7 +141,28 @@ public class TicketGUI extends JFrame{
         saveQuitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                System.out.println(openTickets.toString());
+                Date dateResolved = new Date(); //Default constructor creates date with current date/time
                 //Open a new buffered writer to write the resolved files
+                try {
+                    BufferedWriter open = new BufferedWriter(new FileWriter("open_tickets.txt"));
+                    //BufferedWriter todayResolved = new BufferedWriter(new FileWriter("Resolve tickets_as_of_" +
+                      //      dateResolved + ".txt"));
+                    for (Ticket openTicket : openTickets) {
+                        open.write(openTicket.toString() + "\n");
+                    }
+                    //for (Ticket resolved : resolvedTickets){
+                      //  todayResolved.write(resolved.toString() + "\n");
+                    //}
+                    open.close();
+                    //todayResolved.close();
+                }
+                catch (IOException iex) {
+                    System.out.println(iex);
+
+                }
+                System.exit(0);
+
 
             }
         });
